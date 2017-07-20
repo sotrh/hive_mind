@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.sotrh.hive_mind.components.PositionComponent
 import com.sotrh.hive_mind.components.VelocityComponent
 import com.sotrh.hive_mind.systems.DebugRenderSystem
+import com.sotrh.hive_mind.systems.InputSystem
 import com.sotrh.hive_mind.systems.MovementSystem
 
 class HiveMindGame : Game() {
@@ -37,31 +38,11 @@ class HiveMindGame : Game() {
 
         world = World(WorldConfigurationBuilder()
                 .with(
+                        InputSystem(),
                         MovementSystem(),
                         DebugRenderSystem(batch, camera, debugTexture)
                 )
                 .build())
-
-        pm = world.getMapper(PositionComponent::class.java)
-        vm = world.getMapper(VelocityComponent::class.java)
-
-        val centerX = Gdx.graphics.width / 2f
-        val centerY = Gdx.graphics.height / 2f
-        createEntity(centerX, centerY, 20f, 20f)
-        createEntity(centerX, centerY, -20f, 20f)
-        createEntity(centerX, centerY, 20f, -20f)
-        createEntity(centerX, centerY, -20f, -20f)
-    }
-
-    private fun createEntity(x: Float, y: Float, vx: Float, vy: Float) {
-        val entityId = world.create()
-        val pc = pm.create(entityId)
-        val vc = vm.create(entityId)
-
-        pc.x = x
-        pc.y = y
-        vc.vx = vx
-        vc.vy = vy
     }
 
     override fun resize(width: Int, height: Int) {
@@ -72,11 +53,6 @@ class HiveMindGame : Game() {
     }
 
     override fun render() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit()
-            return
-        }
-
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         camera.update()
         world.delta = Gdx.graphics.deltaTime
