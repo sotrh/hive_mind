@@ -17,3 +17,10 @@ fun log(tag: String, message: String) {
 }
 
 fun debugLog(message: String) = log("Hive Mind: debug", message)
+
+fun circleCollision(ax: Float, ay: Float, ar: Float, bx: Float, by: Float, br: Float): Boolean {
+    val x = bx - ax
+    val y = by - ay
+    val r = ar + br
+    return x * x + y * y <= r * r
+}

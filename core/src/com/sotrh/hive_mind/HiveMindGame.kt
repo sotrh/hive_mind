@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.sotrh.hive_mind.components.PositionComponent
 import com.sotrh.hive_mind.components.VelocityComponent
+import com.sotrh.hive_mind.plugins.EnvironmentPlugin
 import com.sotrh.hive_mind.systems.DebugRenderSystem
 import com.sotrh.hive_mind.systems.InputSystem
 import com.sotrh.hive_mind.systems.MovementSystem
@@ -22,9 +23,6 @@ class HiveMindGame : Game() {
     private lateinit var camera: OrthographicCamera
 
     private lateinit var world: World
-
-    private lateinit var pm: ComponentMapper<PositionComponent>
-    private lateinit var vm: ComponentMapper<VelocityComponent>
 
     override fun create() {
         camera = OrthographicCamera()
@@ -37,6 +35,9 @@ class HiveMindGame : Game() {
         }
 
         world = World(WorldConfigurationBuilder()
+                .with(
+                        EnvironmentPlugin()
+                )
                 .with(
                         InputSystem(),
                         MovementSystem(),
