@@ -6,6 +6,7 @@ import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.sotrh.hive_mind.components.DeadComponent
 import com.sotrh.hive_mind.components.FireComponent
@@ -18,7 +19,7 @@ import com.sotrh.hive_mind.components.RadiusComponent
 class DebugRenderSystem(
         val batch: SpriteBatch,
         val camera: OrthographicCamera,
-        val debugTexture: Texture
+        val debugTexture: Texture, val debugFont: BitmapFont
 ) : IteratingSystem(Aspect.all(
         PositionComponent::class.java
 )) {

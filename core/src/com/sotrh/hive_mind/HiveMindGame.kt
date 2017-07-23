@@ -1,24 +1,22 @@
 package com.sotrh.hive_mind
 
 import com.artemis.*
-import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.sotrh.hive_mind.components.PositionComponent
-import com.sotrh.hive_mind.components.VelocityComponent
+import com.sotrh.hive_mind.plugins.CleanupPlugin
 import com.sotrh.hive_mind.plugins.EnvironmentPlugin
+import com.sotrh.hive_mind.plugins.SetupPlugin
 import com.sotrh.hive_mind.systems.DebugRenderSystem
-import com.sotrh.hive_mind.systems.InputSystem
-import com.sotrh.hive_mind.systems.MovementSystem
 
 class HiveMindGame : Game() {
     private lateinit var debugTexture: Texture
+    private lateinit var debugFont: BitmapFont
     private lateinit var batch: SpriteBatch
     private lateinit var camera: OrthographicCamera
 
@@ -34,14 +32,16 @@ class HiveMindGame : Game() {
             debugTexture = Texture(it)
         }
 
+        debugFont = BitmapFont()
+
         world = World(WorldConfigurationBuilder()
                 .with(
-                        EnvironmentPlugin()
+                        SetupPlugin(),
+                        EnvironmentPlugin(),
+                        CleanupPlugin()
                 )
                 .with(
-                        InputSystem(),
-                        MovementSystem(),
-                        DebugRenderSystem(batch, camera, debugTexture)
+                        DebugRenderSystem(batch, camera, debugTexture, debugFont)
                 )
                 .build())
     }
@@ -63,6 +63,7 @@ class HiveMindGame : Game() {
     override fun dispose() {
         batch.dispose()
         world.dispose()
+        debugFont.dispose()
         debugTexture.dispose()
     }
 }
