@@ -38,8 +38,10 @@ class DebugRenderSystem(
     override fun process(entityId: Int) {
         val pc = pm[entityId]
         val rm = rm[entityId]
-        batch.color = if (fm.has(entityId) && !dm.has(entityId)) Color.ORANGE else if (dm.has(entityId)) Color.BROWN else Color.WHITE
-        batch.draw(debugTexture, pc.x - rm.radius, pc.y - rm.radius, rm.radius * 2f, rm.radius * 2f)
+        if (camera.frustum.boundsInFrustum(pc.x, pc.y, 0f, rm.radius, rm.radius, 0f)) {
+            batch.color = if (fm.has(entityId) && !dm.has(entityId)) Color.ORANGE else if (dm.has(entityId)) Color.BROWN else Color.WHITE
+            batch.draw(debugTexture, pc.x - rm.radius, pc.y - rm.radius, rm.radius * 2f, rm.radius * 2f)
+        }
     }
 
     override fun end() {

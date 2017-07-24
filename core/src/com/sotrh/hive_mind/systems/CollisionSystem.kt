@@ -31,6 +31,7 @@ class CollisionSystem : BaseEntitySystem(Aspect.all(PositionComponent::class.jav
                     if (pm.has(b) && rm.has(b)) {
                         val rcb = rm[entities[b]]
                         val pcb = pm[entities[b]]
+                        // todo: fix null pointer exception here
                         if (circleCollision(pca.x, pca.y, rca.radius, pcb.x, pcb.y, rcb.radius)) {
                             val entityId = world.create()
                             val collision = cm.create(entityId)
