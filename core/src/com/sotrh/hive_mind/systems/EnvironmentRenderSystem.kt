@@ -12,9 +12,6 @@ import com.sotrh.hive_mind.Environment
  * Created by benjamin on 7/23/17
  */
 class EnvironmentRenderSystem(val environment: Environment, val batch: SpriteBatch, val camera: OrthographicCamera, val debugTexture: Texture) : BaseSystem() {
-    companion object {
-        val TILE_RENDER_SIZE = 100f
-    }
 
     override fun processSystem() {
         batch.projectionMatrix = camera.combined
@@ -24,14 +21,14 @@ class EnvironmentRenderSystem(val environment: Environment, val batch: SpriteBat
     }
 
     private fun drawVisibleTilesFromEnvironment() {
-        val topVisibleRowIndex = Math.min(MathUtils.ceil((camera.viewportHeight / 2f + camera.position.y) / TILE_RENDER_SIZE), environment.height - 1)
-        val leftMostVisibleColumnIndex = Math.max(MathUtils.floor((camera.viewportWidth / 2f - camera.position.x) / TILE_RENDER_SIZE), 0)
-        val bottomVisibleRowIndex = Math.max(MathUtils.floor((camera.viewportHeight / 2f - camera.position.y) / TILE_RENDER_SIZE), 0)
-        val rightMostVisibleColumnIndex = Math.min(MathUtils.ceil((camera.viewportWidth / 2f + camera.position.x) / TILE_RENDER_SIZE), environment.width - 1)
+        val topVisibleRowIndex = Math.min(MathUtils.ceil((camera.viewportHeight / 2f + camera.position.y) / Environment.TILE_RENDER_SIZE), environment.height - 1)
+        val leftMostVisibleColumnIndex = Math.max(MathUtils.floor((camera.viewportWidth / 2f - camera.position.x) / Environment.TILE_RENDER_SIZE), 0)
+        val bottomVisibleRowIndex = Math.max(MathUtils.floor((camera.viewportHeight / 2f - camera.position.y) / Environment.TILE_RENDER_SIZE), 0)
+        val rightMostVisibleColumnIndex = Math.min(MathUtils.ceil((camera.viewportWidth / 2f + camera.position.x) / Environment.TILE_RENDER_SIZE), environment.width - 1)
 
         (leftMostVisibleColumnIndex..rightMostVisibleColumnIndex).forEach { x ->
             (bottomVisibleRowIndex..topVisibleRowIndex).forEach { y ->
-                batch.color = when(environment.getTile(x, y).type) {
+                batch.color = when(environment.getTile(x, y)?.type) {
                     Environment.TILE_DIRT -> Color.BROWN
                     Environment.TILE_LAVA -> Color.ORANGE
                     Environment.TILE_LAVA_DEEP -> Color.CORAL
@@ -39,7 +36,7 @@ class EnvironmentRenderSystem(val environment: Environment, val batch: SpriteBat
                     Environment.TILE_WATER_DEEP -> Color.BLUE
                     else -> Color.WHITE
                 }
-                batch.draw(debugTexture, x * TILE_RENDER_SIZE, y * TILE_RENDER_SIZE, TILE_RENDER_SIZE, TILE_RENDER_SIZE)
+                batch.draw(debugTexture, x * Environment.TILE_RENDER_SIZE, y * Environment.TILE_RENDER_SIZE, Environment.TILE_RENDER_SIZE, Environment.TILE_RENDER_SIZE)
             }
         }
     }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.sotrh.hive_mind.circleCollision
 import com.sotrh.hive_mind.components.DeadComponent
 import com.sotrh.hive_mind.components.PositionComponent
+import com.sotrh.hive_mind.components.TileComponent
 import com.sotrh.hive_mind.components.VelocityComponent
 
 /**
@@ -15,7 +16,8 @@ import com.sotrh.hive_mind.components.VelocityComponent
  */
 class MovementSystem : IteratingSystem(Aspect.all(
         PositionComponent::class.java,
-        VelocityComponent::class.java
+        VelocityComponent::class.java,
+        TileComponent::class.java
 )) {
 
     private lateinit var pm: ComponentMapper<PositionComponent>
@@ -24,7 +26,7 @@ class MovementSystem : IteratingSystem(Aspect.all(
 
     override fun begin() {
         super.begin()
-        Gdx.app.log("MovementSystem", "entities: ${subscription.entities.size()}")
+//        Gdx.app.log("MovementSystem", "entities: ${subscription.entities.size()}")
     }
 
     override fun process(entityId: Int) {

@@ -3,8 +3,9 @@ package com.sotrh.hive_mind.systems
 import com.artemis.Aspect
 import com.artemis.ComponentMapper
 import com.artemis.systems.IteratingSystem
-import com.badlogic.gdx.Gdx
-import com.sotrh.hive_mind.components.*
+import com.sotrh.hive_mind.components.CollisionComponent
+import com.sotrh.hive_mind.components.FireComponent
+import com.sotrh.hive_mind.components.FlammableComponent
 
 /**
  * Created by benjamin on 7/20/17
@@ -17,7 +18,7 @@ class FireSpreadSystem : IteratingSystem(Aspect.all(CollisionComponent::class.ja
 
     override fun begin() {
         super.begin()
-        Gdx.app.log("FireSpreadSystem", "entities: ${subscription.entities.size()}")
+//        Gdx.app.log("FireSpreadSystem", "entities: ${subscription.entities.size()}")
     }
 
     override fun process(entityId: Int) {

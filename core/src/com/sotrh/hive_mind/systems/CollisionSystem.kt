@@ -1,46 +1,53 @@
 package com.sotrh.hive_mind.systems
 
-import com.artemis.ArchetypeBuilder
 import com.artemis.Aspect
 import com.artemis.BaseEntitySystem
 import com.artemis.ComponentMapper
-import com.artemis.systems.IteratingSystem
+import com.sotrh.hive_mind.Environment
 import com.sotrh.hive_mind.circleCollision
-import com.sotrh.hive_mind.components.CollisionComponent
-import com.sotrh.hive_mind.components.PositionComponent
-import com.sotrh.hive_mind.components.RadiusComponent
-import com.sotrh.hive_mind.components.VelocityComponent
+import com.sotrh.hive_mind.components.*
 
 /**
  * Created by benjamin on 7/21/17
  */
-class CollisionSystem : BaseEntitySystem(Aspect.all(PositionComponent::class.java, RadiusComponent::class.java)) {
+class CollisionSystem(val environment: Environment) : BaseEntitySystem(
+        Aspect.all(PositionComponent::class.java, RadiusComponent::class.java, TileComponent::class.java).exclude(DeadComponent::class.java)
+) {
 
-    private lateinit var pm: ComponentMapper<PositionComponent>
-    private lateinit var rm: ComponentMapper<RadiusComponent>
-    private lateinit var cm: ComponentMapper<CollisionComponent>
+    private lateinit var positionMapper: ComponentMapper<PositionComponent>
+    private lateinit var radiusMapper: ComponentMapper<RadiusComponent>
+    private lateinit var collisionMapper: ComponentMapper<CollisionComponent>
+    private lateinit var tileMapper: ComponentMapper<TileComponent>
 
     override fun processSystem() {
         val entities = subscription.entities.data
 
-        (0..entities.size-1).forEach { a ->
-            if (pm.has(a) && rm.has(a)) {
-                val pca = pm[entities[a]]
-                val rca = rm[entities[a]]
-                (a+1..entities.size-1).forEach { b ->
-                    if (pm.has(b) && rm.has(b)) {
-                        val rcb = rm[entities[b]]
-                        val pcb = pm[entities[b]]
-                        // todo: fix null pointer exception here
-                        if (circleCollision(pca.x, pca.y, rca.radius, pcb.x, pcb.y, rcb.radius)) {
+        (0..entities.size - 1).forEach { entityA ->
+            if (positionMapper.has(entityA) && radiusMapper.has(entityA)) {
+                val pca = positionMapper[entities[entityA]]
+                val rca = radiusMapper[entities[entityA]]
+                (entityA + 1..entities.size - 1).forEach { entityB ->
+                    if (positionMapper.has(entityB) && radiusMapper.has(entityB)) {
+                        val rcb = radiusMapper[entities[entityB]]
+                        val pcb = positionMapper[entities[entityB]]
+
+                        if (areEntitiesInTheSameTile(entityA, entityB) &&
+                                circleCollision(pca.x, pca.y, rca.radius, pcb.x, pcb.y, rcb.radius)) {
                             val entityId = world.create()
-                            val collision = cm.create(entityId)
-                            collision.entityA = entities[a]
-                            collision.entityB = entities[b]
+                            val collision = collisionMapper.create(entityId)
+                            collision.entityA = entities[entityA]
+                            collision.entityB = entities[entityB]
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun areEntitiesInTheSameTile(entityA: Int, entityB: Int): Boolean {
+        val tileA = tileMapper.get(entityA)?.tile
+        val tileB = tileMapper.get(entityB)?.tile
+
+        return tileA != null && tileB != null && tileA == tileB
     }
 }

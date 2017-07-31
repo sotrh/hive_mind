@@ -8,18 +8,20 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.sotrh.hive_mind.Environment
 import com.sotrh.hive_mind.components.*
 
 /**
  * Created by benjamin on 7/19/17
  */
-class InputSystem(val camera: OrthographicCamera) : BaseSystem(), InputProcessor {
+class InputSystem(val camera: OrthographicCamera, val environment: Environment) : BaseSystem(), InputProcessor {
 
-    lateinit var pm: ComponentMapper<PositionComponent>
-    lateinit var vm: ComponentMapper<VelocityComponent>
-    lateinit var rm: ComponentMapper<RadiusComponent>
-    lateinit var fm: ComponentMapper<FireComponent>
-    lateinit var flm: ComponentMapper<FlammableComponent>
+    lateinit var flammableMapper: ComponentMapper<FlammableComponent>
+    lateinit var positionMapper: ComponentMapper<PositionComponent>
+    lateinit var velocityMapper: ComponentMapper<VelocityComponent>
+    lateinit var radiusMapper: ComponentMapper<RadiusComponent>
+    lateinit var fireMapper: ComponentMapper<FireComponent>
+    lateinit var tileMapper: ComponentMapper<TileComponent>
 
     private val firstTouch = Vector2()
     private val workVector2 = Vector2()
@@ -44,7 +46,7 @@ class InputSystem(val camera: OrthographicCamera) : BaseSystem(), InputProcessor
 
                 workVector3.set(firstTouch.x, firstTouch.y, 0f)
                 camera.unproject(workVector3)
-                val pc = pm.create(entityId)
+                val pc = positionMapper.create(entityId)
                 pc.x = workVector3.x
                 pc.y = workVector3.y
 
@@ -52,29 +54,33 @@ class InputSystem(val camera: OrthographicCamera) : BaseSystem(), InputProcessor
                 camera.unproject(workVector3)
                 val velocity = workVector2.set(workVector3.x, workVector3.y).sub(pc.x, pc.y)
 
-                val vc = vm.create(entityId)
+                val vc = velocityMapper.create(entityId)
                 vc.vx = velocity.x
                 vc.vy = velocity.y
 
-                rm.create(entityId).radius = 10f
-                flm.create(entityId).fuelValue = 5.0f
+                radiusMapper.create(entityId).radius = 10f
+                flammableMapper.create(entityId).fuelValue = 5.0f
+                tileMapper.create(entityId).tile = environment.getClosestTile(pc.x, pc.y)
+
+                Gdx.app.debug("InputSytem", "Created entity $entityId")
 
                 true
             }
             Input.Buttons.RIGHT -> {
                 val entityId = world.create()
 
-                val fc = fm.create(entityId)
+                val fc = fireMapper.create(entityId)
                 fc.fuel = 1.0f
                 fc.burnRate = 0.0f
 
                 workVector3.set(screenX.toFloat(),  screenY.toFloat(), 0f)
                 camera.unproject(workVector3)
-                val pc = pm.create(entityId)
+                val pc = positionMapper.create(entityId)
                 pc.x = workVector3.x
                 pc.y = workVector3.y
 
-                rm.create(entityId).radius = 10f
+                radiusMapper.create(entityId).radius = 10f
+                tileMapper.create(entityId).tile = environment.getClosestTile(pc.x, pc.y)
 
                 true
             }

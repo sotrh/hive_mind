@@ -1,6 +1,7 @@
 package com.sotrh.hive_mind
 
-import com.artemis.*
+import com.artemis.World
+import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -10,19 +11,14 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.sotrh.hive_mind.plugins.CleanupPlugin
-import com.sotrh.hive_mind.plugins.EnvironmentPlugin
-import com.sotrh.hive_mind.systems.CollisionSystem
-import com.sotrh.hive_mind.systems.DebugRenderSystem
-import com.sotrh.hive_mind.systems.EnvironmentRenderSystem
-import com.sotrh.hive_mind.systems.InputSystem
+import com.sotrh.hive_mind.systems.*
 
 class HiveMindGame : Game() {
     private lateinit var debugTexture: Texture
     private lateinit var debugFont: BitmapFont
     private lateinit var batch: SpriteBatch
     private lateinit var camera: OrthographicCamera
-    private lateinit var enviroment: Environment
+    private lateinit var environment: Environment
 
     private lateinit var world: World
 
@@ -38,20 +34,20 @@ class HiveMindGame : Game() {
 
         debugFont = BitmapFont()
 
-        enviroment = Environment(128, 128)
-        enviroment.getTile(1, 1).type = Environment.TILE_LAVA
+        environment = Environment(128, 128)
+        environment.getTile(1, 1)?.type = Environment.TILE_LAVA
 
         world = World(WorldConfigurationBuilder()
                 .with(
-                        InputSystem(camera),
-                        CollisionSystem()
-                )
-                .with(
-                        EnvironmentPlugin(),
-                        CleanupPlugin()
-                )
-                .with(
-                        EnvironmentRenderSystem(enviroment, batch, camera, debugTexture),
+                        InputSystem(camera, environment),
+                        EnvironmentUpdateSystem(environment),
+                        CollisionSystem(environment),
+                        FireSystem(),
+                        FireSpreadSystem(),
+                        MovementSystem(),
+                        CollisionCleanupSystem(),
+                        CleanupSystem(),
+                        EnvironmentRenderSystem(environment, batch, camera, debugTexture),
                         DebugRenderSystem(batch, camera, debugTexture, debugFont)
                 )
                 .build())
